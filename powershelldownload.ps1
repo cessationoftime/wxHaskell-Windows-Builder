@@ -1,3 +1,10 @@
+$haskellPlatform = "C:\Program Files\Haskell Platform\2014.2.0.0"
+
+if (!(Test-Path $haskellPlatform)){
+echo "You need to install the Haskell Platform ($haskellPlatform)!"
+return
+}
+
 $wxWidgetsVersion="3.0.2"
 $wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
 
