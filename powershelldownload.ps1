@@ -1,3 +1,32 @@
+
+
+function Pause
+{
+    param([string] $pauseKey,
+            [ConsoleModifiers] $modifier,
+            [string] $prompt,
+            [bool] $hideKeysStrokes)
+             
+    Write-Host -NoNewLine "Press $prompt to continue . . . "
+    do
+    {
+        $key = [Console]::ReadKey($hideKeysStrokes)
+    } 
+    while(($key.Key -ne $pauseKey) -or ($key.Modifiers -ne $modifer))   
+     
+    Write-Host
+}
+
+function PauseG ($prompt)
+{
+  Write-Host
+  Write-Host $prompt
+  $modifer = [ConsoleModifiers]::Control
+  Pause "G" $modifer "Ctrl + G" $true
+  
+  Write-Host
+}
+
 $haskellPlatform = "C:\Program Files\Haskell Platform\2014.2.0.0"
 
 if (!(Test-Path $haskellPlatform)){
@@ -42,15 +71,40 @@ Function UnzipWxWidgets
       unzip "$buildDir/$wxWidgetsZip" -d $unzipDest
 	}
 }
-$mingwVno="5.1.6"
-$mingwExe="MinGW-$mingwVno.exe"
+
 
 SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$buildDir\$wxWidgetsZip"
 UnzipWxWidgets
 
 #download and run installer if MinGW is not installed.
 if (!(Test-Path "C:\MinGW")){
-  SfDownload "mingw" "OldFiles/MinGW%20$mingwVno/$mingwExe" "$buildDir\$mingwExe"
-  Invoke-Expression "& '$buildDir\$mingwExe'"
+	$mingwVno="5.1.6"
+	$mingwExe="MinGW-$mingwVno.exe"
+
+	SfDownload "mingw" "OldFiles/MinGW%20$mingwVno/$mingwExe" "$buildDir\$mingwExe"
+  
+	PauseG "MinGW installer will launch next. Remember to install the C++ compiler and MinGW-make options"  
+	Invoke-Expression "& '$buildDir\$mingwExe'"
+	PauseG "Continue when MingW installation finished."
+}
+if (!(Test-Path "C:\msys\1.0")){  
+    $msysVno="1.0.11"
+    $msysExe="MSYS-$msysVno.exe"
+  
+    SfDownload "mingw" "MSYS/Base/msys-core/msys-$msysVno/$msysExe" "$buildDir\$msysExe"
+	
+	PauseG "Msys installer will launch next. When finished check that /etc/fstab is correct,  so that /mingw mounts correctly. It should not be empty!"
+	Invoke-Expression "& '$buildDir\$msysExe'"
+	PauseG "Continue when Msys installation finished."
 }
 
+PauseG "We need to install the following version of GCC into MingW"
+
+#gcc version 3.4.5
+#/c/MinGW/bin/gcc --version
+#gcc version 4.6.3
+Invoke-Expression "& 'C:\Program Files\Haskell Platform\2014.2.0.0\mingw\bin\gcc' --version"
+
+
+PauseG "Instead of"
+Invoke-Expression "& 'c:\MinGW\bin\gcc' --version"
