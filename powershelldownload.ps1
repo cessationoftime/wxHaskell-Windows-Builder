@@ -1,21 +1,23 @@
 $wxWidgetsVersion="3.0.2"
 $wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
 
-Function DownloadWX ($zipfile)
-{
-    if (!(Test-Path $zipfile)){
-	
-		#setup parameters for Sourceforge download
+Function SfDownload ($project, $htmlpath, $outfile) {
+
+    #download if download does not exist
+    if (!(Test-Path $outfile)){
+        $sourceR = "http://sourceforge.net/projects/$project/files/$htmlpath/download"
+        $Rparam = $sourceR -replace ":", "%3A" -replace "/", "%2F" -replace " ", "%20"
+
+        #setup parameters for Sourceforge download
 		$timestamp=[Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-		$parameterR="http%3A%2F%2Fsourceforge.net%2Fprojects%2Fwxwindows%2Ffiles%2F$wxWidgetsVersion%2F$wxWidgetsZip%2Fdownload"
-		$parameters="?r=$parameterR&use_mirror=autoselect&ts=$timestamp"
-		$source = "http://downloads.sourceforge.net/project/wxwindows/$wxWidgetsVersion/$wxWidgetsZip$parameters"
+		$parameters="?r=$Rparam&use_mirror=autoselect&ts=$timestamp" 
+		$source = "http://downloads.sourceforge.net/project/$project/$htmlpath$parameters"
 	
-	    # if File does not exist
 		# download from sourceforge
-		echo "Downloading from SourceForge: $wxWidgetsZip"
-		Invoke-WebRequest $source -OutFile $zipfile
-	}
+		echo "Downloading from SourceForge: /$project/$htmlpath"
+		Invoke-WebRequest $source -OutFile $outfile
+		
+    }	
 }
 
 $buildDir = "$PSScriptRoot/build"
@@ -25,12 +27,23 @@ if (!(Test-Path $buildDir)){
 	New-Item $buildDir -ItemType directory 
 }
 
-Function UnzipWX
+Function UnzipWxWidgets
 {
-    unzip "$buildDir/$wxWidgetsZip" -d "$buildDir/wxWidgets"
+    #unzip if folder does not exist
+    $unzipDest = "$buildDir/wxWidgets"
+    if (!(Test-Path $unzipDest)){
+      unzip "$buildDir/$wxWidgetsZip" -d $unzipDest
+	}
 }
+$mingwVno="5.1.6"
+$mingwExe="MinGW-$mingwVno.exe"
 
-DownloadWX "$buildDir\$wxWidgetsZip"
-UnzipWX
+SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$buildDir\$wxWidgetsZip"
+UnzipWxWidgets
 
+#download and run installer if MinGW is not installed.
+if (!(Test-Path "C:\MinGW")){
+  SfDownload "mingw" "OldFiles/MinGW%20$mingwVno/$mingwExe" "$buildDir\$mingwExe"
+  Invoke-Expression "& '$buildDir\$mingwExe'"
+}
 
