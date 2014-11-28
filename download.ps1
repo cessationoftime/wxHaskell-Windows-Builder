@@ -1,4 +1,8 @@
 
+function ClearAllEnvironmentVariables
+{
+Get-ChildItem Env:
+}
 
 function Pause
 {
