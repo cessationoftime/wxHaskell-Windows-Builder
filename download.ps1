@@ -112,3 +112,12 @@ Invoke-Expression "& 'C:\Program Files\Haskell Platform\2014.2.0.0\mingw\bin\gcc
 
 PauseG "Instead of"
 Invoke-Expression "& 'c:\MinGW\bin\gcc' --version"
+
+Write-Host "How to install GCC components in MINGW: http://www.mingw.org/node/24/revisions/897/view"
+
+#download gcc componenets
+#http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.6.2-1/
+#gcc-core
+#libgcc
+#gcc-c++
+#libstdc++
