@@ -32,5 +32,8 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 
 ### Running ###
 
-* Run download.ps1 from powershell  terminal
-* Run build.bat from cmd
+* Run download.ps1 from powershell terminal (admin mode)
+* Then Run build.bat from cmd  (admin mode)
+
+### Troubleshooting ###
+* wxWidgets-3.0.2 seems to have an error. It spits out an error when compiling in release mode that it is missing a "coredll_headerctlrg.o" file. I copied and renamed a file called  "coredll_headerctlg.o" to "coredll_headerctlrg.o" and this fixed the problem.
