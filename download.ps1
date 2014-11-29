@@ -3,10 +3,20 @@ $USERHOMEDIR="c:\Users\$env:USERNAME"
 $APPDATA="$USERHOMEDIR\AppData\Roaming"
 $cabalBin="$APPDATA\cabal\bin"
 
-function ClearAllEnvironmentVariables
+function GetRandomString ([int]$Length)
 {
-Get-ChildItem Env:
+	$set    = "abcdefghijklmnopqrstuvwxyz0123456789".ToCharArray()
+	$result = ""
+	for ($x = 0; $x -lt $Length; $x++) {
+		$result += $set | Get-Random
+	}
+	return $result
 }
+
+#function ClearAllEnvironmentVariables
+#{
+#Get-ChildItem Env:
+#}
 
 function Pause
 {
@@ -47,9 +57,6 @@ if (!(Test-Path $7zip)){
 echo "You need to install 7-ZIP!"
 return
 }
-
-
-
 
 $wxWidgetsVersion="3.0.2"
 $wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
@@ -101,7 +108,7 @@ Function UnzipWxWidgets
 Function Un7 ($zipfile, $output)
 {
  $curr = (Get-Location).Path
- $tarfile = $zipfile -replace ".lzma", ""
+ $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", ""
  
  Invoke-Expression "& '$7zip\7z' -y x $buildDir\$zipfile -o$tempDir"
  cd $tempDir

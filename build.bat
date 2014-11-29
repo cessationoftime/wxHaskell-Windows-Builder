@@ -21,27 +21,27 @@ set PATHHP=%HaskellPlatform%\mingw\bin;%HaskellPlatform%\lib\extralibs\bin;%Hask
 set PATHWIN=%USERHOMEDIR%\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32\Wbem
 set PATHMINGW=c:\MinGW\bin
 
-REM use MinGW's GHC (should be updated to 4.6.2)
+REM use MinGW's GCC (should be updated to 4.5.2)
 set PATH=%PATHMINGW%;%PATHWX%;%PATHWIN%
 
-gcc --version
+REM gcc --version
 cd %WXDIR%/build/msw
 
-REM mingw32-make -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=release clean
-REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=release
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
-mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug clean
-mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
-cd %WXDIR%/samples/minimal
+REM cd %WXDIR%/samples/minimal
 
-mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug clean
-mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
-REM use Haskell Platform's GHC (4.6.3)
-set PATH=%PATHHP%;%PATHWX%;%PATHMINGW%;%PATHWIN%
+REM use Haskell Platform's GCC (4.5.2)
+REM set PATH=%PATHHP%;%PATHWX%;%PATHMINGW%;%PATHWIN%
 
-gcc --version
-wx-config
+REM gcc --version
+REM wx-config
 
 cd %ROOTDIR%
