@@ -35,7 +35,7 @@ function PauseG ($prompt)
   Write-Host
 }
 
-$haskellPlatform = "C:\Program Files\Haskell Platform\2014.2.0.0"
+$haskellPlatform = "C:\Program Files (x86)\Haskell Platform\2014.2.0.0"
 
 if (!(Test-Path $haskellPlatform)){
 echo "You need to install the Haskell Platform ($haskellPlatform)!"
@@ -53,6 +53,14 @@ return
 
 $wxWidgetsVersion="3.0.2"
 $wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
+
+Function GhcGitDownload ($file) {
+    #download if download does not exist
+    if (!(Test-Path "$buildDir\$file")){
+		echo "Downloading from http://git.haskell.org/ghc-tarballs.git/: $outfile"
+		Invoke-WebRequest "http://git.haskell.org/ghc-tarballs.git/tree/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw/$file" -OutFile "$buildDir\$file"
+    }	
+}
 
 Function SfDownload ($project, $htmlpath, $outfile) {
 
@@ -131,14 +139,21 @@ PauseG "This is the version of GCC that comes with the Haskell Platform, we need
 #gcc version 3.4.5
 #/c/MinGW/bin/gcc --version
 #gcc version 4.6.3
-Invoke-Expression "& 'C:\Program Files\Haskell Platform\2014.2.0.0\mingw\bin\gcc' --version"
+Invoke-Expression "& '$haskellPlatform\mingw\bin\gcc' --version"
 
 Write-Host "MinGW currently has: "
 Invoke-Expression "& '$mingw\bin\gcc' --version"
 PauseG "If Haskell has GCC version 4.6.3 then we need 4.6.x. We will install 4.6.2 into MinGW."
+
+$libs = @("binutils-2.20.51-1-mingw32-bin.tar.lzma","gcc-c++-4.5.2-1-mingw32-bin.tar.lzma","gcc-core-4.5.2-1-mingw32-bin.tar.lzma","libgcc-4.5.2-1-mingw32-dll-1.tar.lzma","libgmp-5.0.1-1-mingw32-dll-10.tar.lzma","libmpc-0.8.1-1-mingw32-dll-2.tar.lzma","libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma","libstdc++-4.5.2-1-mingw32-dll-6.tar.lzma","mingwrt-3.18-mingw32-dev.tar.gz","mingwrt-3.18-mingw32-dll.tar.gz","w32api-3.15-1-mingw32-dev.tar.lzma")
+
+foreach ($lib in $libs) {
+	GhcGitDownload $lib #download, if have not already done so
+	Un7 $lib $mingw  #unzip
+}
+
+<#
 Write-Host "How to install GCC components in MINGW: http://www.mingw.org/node/24/revisions/897/view"
-
-
 
 #download gcc componenets
 #http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.6.2-1/
@@ -146,6 +161,8 @@ Write-Host "How to install GCC components in MINGW: http://www.mingw.org/node/24
 #....MAYBE  http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.6-release/
 
 #http://www.mingw.org/node/24/revisions/897/view
+
+
 $gccVersion = "4.6.2-1"
 $gccDownloadPath = "MinGW/Base/gcc/Version4/gcc-$gccVersion"
 $gccCore = [System.Tuple]::Create($gccDownloadPath,"gcc-core-$gccVersion-mingw32-bin.tar.lzma")
@@ -210,7 +227,7 @@ PauseG     ""
 foreach ($lib in $libs) {
 	Un7 "$($lib.Item2)" "$mingw"
 }
-
+#>
 PauseG "The following GCC is now installed in MinGW: "
 Invoke-Expression "& '$mingw\bin\gcc' --version"
 

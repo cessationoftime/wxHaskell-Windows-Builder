@@ -14,7 +14,7 @@ set GHC_VNO=7.8.3
 set WXC_VNO=0.91.0.0
 set USERHOMEDIR=c:\Users\%USERNAME%
 set APPDATA=%USERHOMEDIR%\AppData\Roaming
-set HaskellPlatform=c:\Program Files\Haskell Platform\2014.2.0.0
+set HaskellPlatform=c:\Program Files (x86)\Haskell Platform\2014.2.0.0
 
 set PATHWX=%WXDIR%\lib\gcc_dll;%WXDIR%;%APPDATA%\cabal\bin;%APPDATA%\cabal\i386-windows-ghc-%GHC_VNO%\wxc-%WXC_VNO%
 set PATHHP=%HaskellPlatform%\mingw\bin;%HaskellPlatform%\lib\extralibs\bin;%HaskellPlatform%\bin
