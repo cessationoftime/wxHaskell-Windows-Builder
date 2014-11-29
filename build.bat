@@ -30,7 +30,7 @@ cd %WXDIR%/build/msw
 REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
 REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
-mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
 mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
 REM cd %WXDIR%/samples/minimal

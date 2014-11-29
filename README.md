@@ -36,4 +36,8 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 * Then Run build.bat from cmd  (admin mode)
 
 ### Troubleshooting ###
-* wxWidgets-3.0.2 seems to have an error. It spits out an error when compiling in release mode that it is missing a "coredll_headerctlrg.o" file. I copied and renamed a file called  "coredll_headerctlg.o" to "coredll_headerctlrg.o" and this fixed the problem.
+* wxWidgets-3.0.2 spits out an error when compiling in release mode that it is missing a "coredll_headerctlg.o" file. I copied and renamed a file called  "coredll_headerctrlg.o" to "coredll_headerctlg.o", this seemed to fix the problem.  Though I am uncertain if it is the correct fix.
+
+```
+g++: gcc_mswudll\coredll_headerctlg.o: No such file or directory
+```
