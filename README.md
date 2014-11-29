@@ -19,4 +19,4 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 ### Running ###
 
 * Run download.ps1 from powershell  terminal
-* Run build.sh from msys terminal
+* Run build.bat from cmd

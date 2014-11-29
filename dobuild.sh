@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ######
+# DEPRECATED: use build.bat
 # This script should not be launched directly. 
 # Allow ./build.sh to launch this script, this removes unnecessary environment variables to reduce side effects.
 ######

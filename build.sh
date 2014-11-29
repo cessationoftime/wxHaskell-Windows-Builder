@@ -1,7 +1,9 @@
 #!/bin/sh
 
 ######
+# DEPRECATED: use build.bat
 # Run from MingW/Msys
+#
 ######
 
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

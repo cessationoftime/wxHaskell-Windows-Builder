@@ -1,7 +1,11 @@
 @echo off
 
 REM unset all variables localy except for USERNAME
-FOR	/F "delims==" %%i IN ('set') DO IF NOT %%i==USERNAME SET "%%i="
+
+REM we are removing one too many env variables
+REM FOR	/F "delims==" %%i IN ('set') DO IF NOT %%i==USERNAME SET "%%i="
+
+
 
 set ROOTDIR=%~dp0
 set BUILDDIR=%ROOTDIR%\build
