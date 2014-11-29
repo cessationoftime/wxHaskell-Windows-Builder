@@ -182,8 +182,9 @@ $libgomp = [System.Tuple]::Create($gccDownloadPath,"libgomp-$gccVersion-mingw32-
 $libssp = [System.Tuple]::Create($gccDownloadPath,"libssp-$gccVersion-mingw32-dll-0.tar.lzma")
 $libquadmath = [System.Tuple]::Create($gccDownloadPath,"libquadmath-$gccVersion-mingw32-dll-0.tar.lzma")
 
+$win32 = [System.Tuple]::Create("MinGW/Base/w32api/w32api-3.17","w32api-3.17-2-mingw32-dev.tar.lzma")
 
-$libs = @($gccCore, $libGcc, $gccCpp, $libstdcpp, $gmp, $libgmp, $mpc,$libmpc,$mpfr,$libmpfr,$pthreads,$libpthreads,$libiconvDev,$libiconvDll,$gettext,$libgomp, $libssp, $libquadmath)
+$libs = @($gccCore, $libGcc, $gccCpp, $libstdcpp, $gmp, $libgmp, $mpc,$libmpc,$mpfr,$libmpfr,$pthreads,$libpthreads,$libiconvDev,$libiconvDll,$gettext,$libgomp, $libssp, $libquadmath, $win32)
 foreach ($lib in $libs) {
 	SfDownload "mingw" "$($lib.Item1)/$($lib.Item2)" "$buildDir\$($lib.Item2)"
 }	
