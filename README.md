@@ -3,9 +3,23 @@ wxHaskell-Windows-Builder
 
 Script to download all dependencies of wxHaskell and build it on Windows.
 
-### Prerequisites: ###
+# Support for 32-bit GHC ONLY
+* Per the [wxHaskell building docs](https://www.haskell.org/haskellwiki/WxHaskell/Building#Supported_Configurations). Only building withthe  32-bit MinGW project is supported. 
+ 
 
-* Haskell Platform 2014.2.0.0 for Windows, 64bit 
+### About GHC and MinGW/GCC ###
+
+
+ * There is a [ticket](https://ghc.haskell.org/trac/ghc/ticket/9218) to upgrade the version of MinGW that ships with GHC
+ * Currently GHC uses MinGW for 32-bit and MinGW-w64 for the 64-bit version. This ticket intends to use the MinGW-w64 project for both the 32-bit and 64-bit versions. 
+ * This affects what MinGW/GCC version we need to use for wxWidgets/wxHaskell.
+ * Haskell Platform 2014.2.0.0 
+	 * 64-bit includes GCC version [rubenvb-4.6.3](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.6-release/)
+
+
+### Prerequisites for the windows builder tool: ###
+
+* Haskell Platform 2014.2.0.0 for Windows, 32bit 
 * 7-zip
 
 	**For the Powershell download script**

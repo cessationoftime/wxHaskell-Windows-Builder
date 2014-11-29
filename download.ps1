@@ -138,6 +138,8 @@ Invoke-Expression "& '$mingw\bin\gcc' --version"
 PauseG "If Haskell has GCC version 4.6.3 then we need 4.6.x. We will install 4.6.2 into MinGW."
 Write-Host "How to install GCC components in MINGW: http://www.mingw.org/node/24/revisions/897/view"
 
+
+
 #download gcc componenets
 #http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.6.2-1/
 

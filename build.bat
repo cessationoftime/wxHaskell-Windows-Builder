@@ -22,13 +22,21 @@ set PATHWIN=%USERHOMEDIR%\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32
 set PATHMINGW=c:\MinGW\bin
 
 REM use MinGW's GHC (should be updated to 4.6.2)
-set PATH=%PATHMINGW%;%PATHWX%;%PATHHP%;%PATHWIN%
+set PATH=%PATHMINGW%;%PATHWX%;%PATHWIN%
 
 gcc --version
 cd %WXDIR%/build/msw
 
-mingw32-make -f makefile.gcc SHARED=1 UNICODE=1 BUILD=release clean
-mingw32-make -j4 -f makefile.gcc SHARED=1 UNICODE=1 BUILD=release
+REM mingw32-make -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=release clean
+REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=release
+
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug clean
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug
+
+cd %WXDIR%/samples/minimal
+
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug clean
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe MONOLITHIC=1 SHARED=1 UNICODE=1 BUILD=debug
 
 REM use Haskell Platform's GHC (4.6.3)
 set PATH=%PATHHP%;%PATHWX%;%PATHMINGW%;%PATHWIN%
