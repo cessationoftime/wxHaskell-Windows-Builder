@@ -15,7 +15,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
  * This affects what MinGW/GCC version we need to use for wxWidgets/wxHaskell.
  * Haskell Platform 2014.2.0.0 
 	 * 64-bit includes GCC version [rubenvb-4.6.3](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.6-release/)
-
+ * Note: MinGW tarballs used with the GHC project are [here](http://git.haskell.org/ghc-tarballs.git/tree)
 
 ### Prerequisites for the windows builder tool: ###
 
