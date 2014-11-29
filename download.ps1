@@ -1,4 +1,8 @@
 
+$USERHOMEDIR="c:\Users\$env:USERNAME"
+$APPDATA="$USERHOMEDIR\AppData\Roaming"
+$cabalBin="$APPDATA\cabal\bin"
+
 function ClearAllEnvironmentVariables
 {
 Get-ChildItem Env:
@@ -80,7 +84,7 @@ if (!(Test-Path $buildDir)){
 Function UnzipWxWidgets
 {
     #unzip if folder does not exist
-    $unzipDest = "$buildDir/wxWidgets"
+    $unzipDest = "c:\wxWidgets-autob"
     if (!(Test-Path $unzipDest)){
       unzip "$buildDir/$wxWidgetsZip" -d $unzipDest
 	}
@@ -122,17 +126,16 @@ if (!(Test-Path "C:\msys\1.0")){
 	PauseG "Continue when Msys installation finished."
 }
 
-PauseG "We need to install the following version of GCC into MingW"
+PauseG "This is the version of GCC that comes with the Haskell Platform, we need to install a compatible version into MinGW"
 
 #gcc version 3.4.5
 #/c/MinGW/bin/gcc --version
 #gcc version 4.6.3
 Invoke-Expression "& 'C:\Program Files\Haskell Platform\2014.2.0.0\mingw\bin\gcc' --version"
 
-
-PauseG "Instead of"
+Write-Host "MinGW currently has: "
 Invoke-Expression "& '$mingw\bin\gcc' --version"
-
+PauseG "If Haskell has GCC version 4.6.3 then we need 4.6.x. We will install 4.6.2 into MinGW."
 Write-Host "How to install GCC components in MINGW: http://www.mingw.org/node/24/revisions/897/view"
 
 #download gcc componenets
@@ -164,3 +167,9 @@ Un7 "$gccCore" "$mingw"
 Un7 "$libGcc" "$mingw"
 Un7 "$gccCpp" "$mingw"
 Un7 "$libstdcpp" "$mingw"
+
+PauseG "The following GCC is now installed in MinGW: "
+Invoke-Expression "& '$mingw\bin\gcc' --version"
+
+$wxConfigExe="wx-config.exe"
+SfDownload "wxhaskell" "wx-config-win/$wxConfigExe" "$cabalBin\$wxConfigExe"
