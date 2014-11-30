@@ -1,8 +1,11 @@
 
 $wxHaskellPath = "c:\wxHaskell"
 
-$GHC_VNO="7.8.3"
-$WXC_VNO="0.91.0.0"
+$env:GHC_VERSION = "7.8.3"
+$env:WXC_VERSION = "0.91.0.0"
+$env:WXCFG = "gcc_dll\mswu"
+$env:WXWIN = "C:\wxWidgets-autob"
+
 $wxWidgetsVersion="3.0.2"
 
 $USERHOMEDIR="c:\Users\$env:USERNAME"
@@ -16,7 +19,7 @@ $downloadDir = "$PSScriptRoot\download"
 $mingw = "C:\MinGW"
 $tempDir = $env:Temp
 
-$WXDIR="C:\wxWidgets-autob"
+$WXDIR = $env:WXWIN
 
 
 $wxWidgetsExistsOnStartup = Test-Path $WXDIR
@@ -210,7 +213,7 @@ wxHaskell
 
 ########################     BUILD       ##############
 
-$PATHWX="$WXDIR\lib\gcc_dll;$WXDIR;$APPDATA\cabal\bin;$APPDATA\cabal\i386-windows-ghc-$GHC_VNO\wxc-$WXC_VNO"
+$PATHWX="$WXDIR\lib\gcc_dll;$WXDIR;$APPDATA\cabal\bin;$APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION"
 $PATHHP="$haskellPlatform\mingw\bin;$haskellPlatform\lib\extralibs\bin;$haskellPlatform\bin"
 $PATHWIN="$USERHOMEDIR\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32\Wbem"
 $PATHMINGW="c:\MinGW\bin"
@@ -275,8 +278,21 @@ Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 ########################## Export Environment ##################
 
 #list out the environment variables needed to launch a wxHaskell program.
-Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
-$response2 = PauseYN
+
+#Write-Host "The following environment settings will be needed to build wxHaskell programs."
+
+#Write-Host "The following environment settings will be needed at runtime by wxHaskell programs."
+Write-Host "PATH += $wxHexPath\wxc\dist\build"
+Write-Host "GHC_VERSION = $env:GHC_VERSION"
+Write-Host "WXC_VERSION = $env:WXC_VERSION"
+Write-Host "WXCFG = $env:WXCFG"
+Write-Host "WXWIN = $env:WXWIN"
+
+#Write-Host "The following DLLs will be needed at runtime by wxHaskell programs."
+
+#TODO: make it write the environment vars permanently.
+#Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
+#$response2 = PauseYN
 
 
 
