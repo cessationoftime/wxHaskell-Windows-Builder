@@ -21,26 +21,34 @@ set PATHHP=%HaskellPlatform%\mingw\bin;%HaskellPlatform%\lib\extralibs\bin;%Hask
 set PATHWIN=%USERHOMEDIR%\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32\Wbem
 set PATHMINGW=c:\MinGW\bin
 
-REM use MinGW's GCC (should be updated to 4.5.2)
+
+REM ----BUILD wxWidgets----
+
+REM change path to use MinGW's GCC (should be updated to 4.5.2)
 set PATH=%PATHMINGW%;%PATHWX%;%PATHWIN%
 
-REM gcc --version
 cd %WXDIR%/build/msw
 
-REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
-REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
-
-REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
 mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
 
-REM cd %WXDIR%/samples/minimal
+REM ----QUICK-FIX---- for wxWidgets-3.0.2
+copy %WXDIR%\build\msw\gcc_mswudll\coredll_headerctrlg.o %WXDIR%\build\msw\gcc_mswudll\coredll_headerctlg.o
+mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
+REM ----END QUICK-FIX---- remove this fix for other versions.  Or find a better fix for this version.
+
+REM ----BUILD SAMPLES----
+REM cd %WXDIR%/samples
 
 REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release clean
 REM mingw32-make -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release
+REM ----END BUILD SAMPLES----
 
-REM use Haskell Platform's GCC (4.5.2)
-REM set PATH=%PATHHP%;%PATHWX%;%PATHMINGW%;%PATHWIN%
+REM ---- END BUILD wxWidgets----
 
+REM change path to use Haskell Platform's GCC (4.5.2)
+set PATH=%PATHHP%;%PATHWX%;%PATHMINGW%;%PATHWIN%
+REM mingw32-make -j4 SHELL=CMD.exe
 REM gcc --version
 REM wx-config
 
