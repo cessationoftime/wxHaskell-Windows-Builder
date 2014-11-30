@@ -17,7 +17,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 	 * 64-bit includes GCC version [4.6.3](http://git.haskell.org/ghc-tarballs.git/tree/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64) (from [sourceforge](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.6-release/))
 	 * 32-bit includes GCC version [4.5.2](http://git.haskell.org/ghc-tarballs.git/tree/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw)
 
-### Prerequisites for the windows builder tool: ###
+### Prerequisites for this script: ###
 
 * Haskell Platform 2014.2.0.0 for Windows, 32bit 
 * 7-zip
