@@ -94,7 +94,7 @@ function GetRandomString ([int]$Length)
 
 
 if (!(Test-Path $haskellPlatform)){
-Write-Host "You need to install the Haskell Platform ($haskellPlatform)!"
+Write-Host "You need to install the Haskell Platform ($haskellPlatform)! Only the 32-bit version is supported."
 return
 }
 $7zip = "C:\Program Files\7-Zip"
@@ -279,21 +279,16 @@ Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 
 #list out the environment variables needed to launch a wxHaskell program.
 
-#Write-Host "The following environment settings will be needed to build wxHaskell programs."
-
-#Write-Host "The following environment settings will be needed at runtime by wxHaskell programs."
-Write-Host "PATH += $wxHexPath\wxc\dist\build"
+Write-Host "The following environment settings should be added to the Windows environment: "
+Write-Host "PATH += $APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION\wxc.dll"
 Write-Host "GHC_VERSION = $env:GHC_VERSION"
 Write-Host "WXC_VERSION = $env:WXC_VERSION"
 Write-Host "WXCFG = $env:WXCFG"
 Write-Host "WXWIN = $env:WXWIN"
 
-#Write-Host "The following DLLs will be needed at runtime by wxHaskell programs."
-
 #TODO: make it write the environment vars permanently.
 #Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
 #$response2 = PauseYN
-
 
 
 
