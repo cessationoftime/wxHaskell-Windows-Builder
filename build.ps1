@@ -1,3 +1,18 @@
+#remove non-essential environment variables from this PS sesssion
+function RemoveEnvironment
+{
+	$keep = @("PATH","ALLUSERSPROFILE","APPDATA","CLIENTNAME","COMMONPROGRAMFILES","COMMONPROGRAMFILES(X86)","COMMONPROGRAMW6432","COMPUTERNAME","COMSPEC","LOCALAPPDATA","NUMBER_OF_PROCESSORS","OS","PATHEXT","PROCESSOR_ARCHITECTURE","PROCESSOR_ARCHITEW6432","PROCESSOR_IDENTIFIER","PROCESSOR_LEVEL","PROCESSOR_REVISION","PROGRAMDATA","PROGRAMFILES","PROGRAMFILES(X86)","PROGRAMW6432","PSMODULEPATH","PUBLIC","SYSTEMDRIVE","SYSTEMROOT","TEMP","TMP","TIME","USERNAME","USERPROFILE","WINDIR","WINDOWS_TRACING_FLAGS","WINDOWS_TRACING_LOGFILE","DATE","ERRORLEVEL","HIGHESTNUMANODENUMBER","HOMEDRIVE","HOMEPATH","LOGONSERVER","SYSTEM","PROMPT","USERDNSDOMAIN","USERDOMAIN")
+
+	foreach ($e in (Get-ChildItem Env:)) {
+		$key = $($e.key)
+		if (!($keep -contains $key)) {
+		(Remove-Item Env:\$key)
+		}
+	}
+}
+
+RemoveEnvironment
+
 
 $wxHaskellPath = "c:\wxHaskell"
 
@@ -23,6 +38,8 @@ $WXDIR = $env:WXWIN
 
 
 $wxWidgetsExistsOnStartup = Test-Path $WXDIR
+
+
 function Pause
 {
     param([string] $pauseKey,
@@ -39,6 +56,7 @@ function Pause
      
     Write-Host
 }
+
 
 function PauseG ($prompt)
 {
@@ -260,13 +278,7 @@ $wxHexPath="$wxHaskellPath\wxHaskell-$wxHaskellHex"
 cd "$wxHexPath\wxdirect"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
-cd "$wxHexPath\wxcore"
-Invoke-Expression "& 'cabal' configure"
-Invoke-Expression "& 'cabal' install"
 cd "$wxHexPath\wxc"
-Invoke-Expression "& 'cabal' configure"
-Invoke-Expression "& 'cabal' install"
-cd "$wxHexPath\wx"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 
@@ -277,19 +289,22 @@ Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 
 ########################## Export Environment ##################
 
-#list out the environment variables needed to launch a wxHaskell program.
-
-Write-Host "The following environment settings should be added to the Windows environment: "
+Write-Host "The following environment settings need to be added to the Windows environment manually for wxHaskell programs to run: "
 Write-Host "PATH += $APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION\wxc.dll"
 Write-Host "GHC_VERSION = $env:GHC_VERSION"
 Write-Host "WXC_VERSION = $env:WXC_VERSION"
 Write-Host "WXCFG = $env:WXCFG"
 Write-Host "WXWIN = $env:WXWIN"
 
+Write-Host "MinGW/gcc, wxWidgets, wxdirect and wxc have been installed by this script. However, wxcore and wx still need 'cabal install' run on them manually. They are located here:"
+Write-HOST "$wxHexPath\wxcore"
+Write-HOST "$wxHexPath\wx"
+
 #TODO: make it write the environment vars permanently.
 #Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
 #$response2 = PauseYN
 
-
+#set environment permanently
+#[Environment]::SetEnvironmentVariable("TestVariable", "Test value.", "User")
 
 cd $PSScriptRoot
