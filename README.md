@@ -4,7 +4,7 @@ wxHaskell-Windows-Builder
 Script to download all dependencies of wxHaskell and build it on Windows.
 
 # Support for 32-bit GHC ONLY
-* Per the [wxHaskell building docs](https://www.haskell.org/haskellwiki/WxHaskell/Building#Supported_Configurations). Only building with the  32-bit MinGW project is supported. 
+* Per the [wxHaskell building docs](https://www.haskell.org/haskellwiki/WxHaskell/Building#Supported_Configurations). Only building with the  32-bit MinGW project is supported. However this works on Windows 7 64-bit.
  
 
 ### About GHC and MinGW/GCC ###
