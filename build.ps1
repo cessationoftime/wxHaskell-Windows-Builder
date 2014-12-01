@@ -1,88 +1,3 @@
-#remove non-essential environment variables from this PS sesssion
-function RemoveEnvironment
-{
-	$keep = @("PATH","ALLUSERSPROFILE","APPDATA","CLIENTNAME","COMMONPROGRAMFILES","COMMONPROGRAMFILES(X86)","COMMONPROGRAMW6432","COMPUTERNAME","COMSPEC","LOCALAPPDATA","NUMBER_OF_PROCESSORS","OS","PATHEXT","PROCESSOR_ARCHITECTURE","PROCESSOR_ARCHITEW6432","PROCESSOR_IDENTIFIER","PROCESSOR_LEVEL","PROCESSOR_REVISION","PROGRAMDATA","PROGRAMFILES","PROGRAMFILES(X86)","PROGRAMW6432","PSMODULEPATH","PUBLIC","SYSTEMDRIVE","SYSTEMROOT","TEMP","TMP","TIME","USERNAME","USERPROFILE","WINDIR","WINDOWS_TRACING_FLAGS","WINDOWS_TRACING_LOGFILE","DATE","ERRORLEVEL","HIGHESTNUMANODENUMBER","HOMEDRIVE","HOMEPATH","LOGONSERVER","SYSTEM","PROMPT","USERDNSDOMAIN","USERDOMAIN")
-
-	foreach ($e in (Get-ChildItem Env:)) {
-		$key = $($e.key)
-		if (!($keep -contains $key)) {
-		(Remove-Item Env:\$key)
-		}
-	}
-}
-
-RemoveEnvironment
-
-
-$wxHaskellPath = "c:\wxHaskell"
-
-$env:GHC_VERSION = "7.8.3"
-$env:WXC_VERSION = "0.91.0.0"
-$env:WXCFG = "gcc_dll\mswu"
-$env:WXWIN = "C:\wxWidgets-autob"
-
-$wxWidgetsVersion="3.0.2"
-
-$USERHOMEDIR="c:\Users\$env:USERNAME"
-$APPDATA="$USERHOMEDIR\AppData\Roaming"
-$cabalBin="$APPDATA\cabal\bin"
-$haskellPlatform = "C:\Program Files (x86)\Haskell Platform\2014.2.0.0"
-
-$wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
-
-$downloadDir = "$PSScriptRoot\download"
-$mingw = "C:\MinGW"
-$tempDir = $env:Temp
-
-$WXDIR = $env:WXWIN
-
-
-$wxWidgetsExistsOnStartup = Test-Path $WXDIR
-
-
-function Pause
-{
-    param([string] $pauseKey,
-            [ConsoleModifiers] $modifier,
-            [string] $prompt,
-            [bool] $hideKeysStrokes)
-             
-    Write-Host -NoNewLine "Press $prompt to continue . . . "
-    do
-    {
-        $key = [Console]::ReadKey($hideKeysStrokes)
-    } 
-    while(($key.Key -ne $pauseKey) -or ($key.Modifiers -ne $modifer))   
-     
-    Write-Host
-}
-
-
-function PauseG ($prompt)
-{
-  Write-Host
-  Write-Host $prompt
-  $modifer = [ConsoleModifiers]::Control
-  Pause "G" $modifer "Ctrl + G" $true
-  
-  Write-Host
-}
-
-function PauseYN
-{             
-	$modifer = [ConsoleModifiers]::Control
-			 
-    Write-Host -NoNewLine "Press (Ctrl + Y) or (Ctrl + N) to continue . . . "
-    do
-    {
-        $key = [Console]::ReadKey($true)
-    } 
-    while(($key.Key -ne "Y" -and $key.Key -ne "N") -or ($key.Modifiers -ne $modifer))   
-     
-    Write-Host
-	
-    return $key.Key
-}
 
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent() )
 & {
@@ -94,20 +9,42 @@ $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Pr
     }
 }
 
-function GetRandomString ([int]$Length)
-{
-	$set    = "abcdefghijklmnopqrstuvwxyz0123456789".ToCharArray()
-	$result = ""
-	for ($x = 0; $x -lt $Length; $x++) {
-		$result += $set | Get-Random
-	}
-	return $result
-}
+#Remove-Module -Name buildmodule
+Import-Module -Force .\buildmodule
 
-#function ClearAllEnvironmentVariables
-#{
-#Get-ChildItem Env:
-#}
+RemoveEnvironment
+
+
+$wxHaskellPath = "c:\wxHaskell"
+
+$env:GHC_VERSION = "7.8.3"
+$env:WXC_VERSION = "0.91.0.0"
+$env:WXCFG = "gcc_dll\mswu"
+$env:WXWIN = "C:\wxWidgets-autob"
+
+$env:zip7 = "C:\Program Files\7-Zip"
+
+$wxWidgetsVersion="3.0.2"
+
+$USERHOMEDIR="c:\Users\$env:USERNAME"
+$APPDATA="$USERHOMEDIR\AppData\Roaming"
+$cabalBin="$APPDATA\cabal\bin"
+$haskellPlatform = "C:\Program Files (x86)\Haskell Platform\2014.2.0.0"
+
+$wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
+
+$downloadDir = "$PSScriptRoot\download"
+
+$env:DownloadDir = $downloadDir
+
+$mingw = "C:\MinGW"
+$tempDir = $env:Temp
+
+$WXDIR = $env:WXWIN
+
+
+$wxWidgetsExistsOnStartup = Test-Path $WXDIR
+
 
 
 
@@ -115,38 +52,10 @@ if (!(Test-Path $haskellPlatform)){
 Write-Host "You need to install the Haskell Platform ($haskellPlatform)! Only the 32-bit version is supported."
 return
 }
-$7zip = "C:\Program Files\7-Zip"
 
-if (!(Test-Path $7zip)){
+if (!(Test-Path $env:zip7)){
 Write-Host "You need to install 7-ZIP!"
 return
-}
-
-Function GhcGitDownload ($file) {
-    #download if download does not exist
-    if (!(Test-Path "$downloadDir\$file")){
-		Write-Host "Downloading from http://git.haskell.org/ghc-tarballs.git/: $file"
-		Invoke-WebRequest "http://git.haskell.org/ghc-tarballs.git/blob/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw/$file" -OutFile "$downloadDir\$file"
-    }	
-}
-
-Function SfDownload ($project, $htmlpath, $outfile) {
-
-    #download if download does not exist
-    if (!(Test-Path $outfile)){
-        $sourceR = "http://sourceforge.net/projects/$project/files/$htmlpath/download"
-        $Rparam = $sourceR -replace ":", "%3A" -replace "/", "%2F" -replace " ", "%20" -replace [regex]::Escape("+"), "%2B"
-
-        #setup parameters for Sourceforge download
-		$timestamp=[Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-		$parameters="?r=$Rparam&use_mirror=autoselect&ts=$timestamp" 
-		$source = "http://downloads.sourceforge.net/project/$project/$htmlpath$parameters"
-	
-		# download from sourceforge
-		Write-Host "Downloading from SourceForge: /$project/$htmlpath"
-		Invoke-WebRequest $source -OutFile $outfile
-		
-    }	
 }
 
 #If !exists Then create build directory
@@ -154,27 +63,9 @@ if (!(Test-Path $downloadDir)){
 	New-Item $downloadDir -ItemType directory 
 }
 
-Function UnzipWxWidgets
-{
-    #unzip if folder does not exist
-    if (!(Test-Path $WXDIR)){
-      unzip "$downloadDir/$wxWidgetsZip" -d $WXDIR
-	}
-}
-
-Function Un7 ($zipfile, $output)
-{
- $curr = (Get-Location).Path
- $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", ""
- 
- Invoke-Expression "& '$7zip\7z' -y x $downloadDir\$zipfile -o$tempDir"
- cd $tempDir
- Invoke-Expression "& '$7zip\7z' -y x $tarfile -o$output"
- cd $curr
-}
 
 SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$downloadDir\$wxWidgetsZip"
-UnzipWxWidgets
+UnzipIfNotExist "$downloadDir/$wxWidgetsZip" $WXDIR
 
 #download and run installer if MinGW is not installed.
 if (!(Test-Path $mingw)){
@@ -212,30 +103,19 @@ foreach ($lib in $libs) {
 }
 
 $wxHaskellHex = "c5dae78e37e492fd5f801ca118e80ba3e2f0ce99"
-function wxHaskell {	
-	$source = "https://github.com/wxHaskell/wxHaskell/archive/$wxHaskellHex.zip"
-    $wxHaskellFile = "wxHaskell_$wxHaskellHex"
-	#download wxHaskell from Github
-	if (!(Test-Path "$downloadDir\$wxHaskellFile")){
-		
-			Write-Host "Downloading $source"
-			Invoke-WebRequest $source -OutFile "$downloadDir\$wxHaskellFile"
-	}
-
-	if (!(Test-Path $wxHaskellPath)){
-		  unzip "$downloadDir/$wxHaskellFile" -d $wxHaskellPath
-	}
-
-}
-wxHaskell
+wxHaskellDownload $wxHaskellHex $wxHaskellPath
 
 ########################     BUILD       ##############
 
-$PATHWX="$WXDIR\lib\gcc_dll;$WXDIR;$APPDATA\cabal\bin;$APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION"
-$PATHHP="$haskellPlatform\mingw\bin;$haskellPlatform\lib\extralibs\bin;$haskellPlatform\bin"
+$env:WXC_PATH = "$APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION"
+$env:HASKELL_MINGW_PATH = "$haskellPlatform\mingw\bin"
+$env:CABAL_PATH = "$APPDATA\cabal\bin"
+$env:WX_PATH = "$WXDIR\lib\gcc_dll;$WXDIR"
+
+$PATHWX="$env:WX_PATH;$env:CABAL_PATH;$env:WXC_PATH"
+$PATHHP="$env:HASKELL_MINGW_PATH;$haskellPlatform\lib\extralibs\bin;$haskellPlatform\bin"
 $PATHWIN="$USERHOMEDIR\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32\Wbem"
 $PATHMINGW="c:\MinGW\bin"
-
 
 # ----BUILD wxWidgets----
 
@@ -283,28 +163,61 @@ Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 
 ## make wxHaskell samples
-cd "$wxHexPath\samples\wx"
-Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
+#cd "$wxHexPath\samples\wx"
+#Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 ## END  -- make wxHaskell samples
 
 ########################## Export Environment ##################
 
-Write-Host "The following environment settings need to be added to the Windows environment manually for wxHaskell programs to run: "
-Write-Host "PATH += $APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION\wxc.dll"
+Write-Host "The following environment settings need to be added to the Windows User (not Machine/System) environment manually for wxHaskell programs to run: "
 Write-Host "GHC_VERSION = $env:GHC_VERSION"
 Write-Host "WXC_VERSION = $env:WXC_VERSION"
 Write-Host "WXCFG = $env:WXCFG"
 Write-Host "WXWIN = $env:WXWIN"
+Write-Host "WXC_PATH = $env:WXC_PATH"
+Write-Host "HASKELL_MINGW_PATH = $env:HASKELL_MINGW_PATH"
+Write-Host "CABAL_PATH = $env:CABAL_PATH"
+Write-Host "WX_PATH = $env:WX_PATH"
+$prependThese = "%WXC_PATH%;%HASKELL_MINGW_PATH%;%CABAL_PATH%;%WX_PATH%"
+Write-Host "$prependThese should be prepended to the USER PATH variable"
 
+#TODO: make it write the environment vars permanently.
+Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
+$response2 = PauseYN
+
+Write-Host
+
+#set environment permanently
+if ($response2 -eq "Y"){
+	
+	
+    $userCurrentPath = [Environment]::GetEnvironmentVariable("PATH", "User" )
+	if (!($userCurrentPath.Contains($prependThese))) {
+	  [Environment]::SetEnvironmentVariable("PATH","$prependThese;$userCurrentPath" , "User" )
+	}
+	
+	[Environment]::SetEnvironmentVariable("WXC_PATH",$env:WXC_PATH, "User" )
+	[Environment]::SetEnvironmentVariable("HASKELL_MINGW_PATH",$env:HASKELL_MINGW_PATH, "User" )
+	[Environment]::SetEnvironmentVariable("CABAL_PATH",$env:CABAL_PATH, "User")
+	[Environment]::SetEnvironmentVariable("WX_PATH",$env:WX_PATH, "User")
+	[Environment]::SetEnvironmentVariable("GHC_VERSION", $env:GHC_VERSION, "User")
+	[Environment]::SetEnvironmentVariable("WXC_VERSION", $env:WXC_VERSION, "User")
+	[Environment]::SetEnvironmentVariable("WXCFG", $env:WXCFG, "User")
+	[Environment]::SetEnvironmentVariable("WXWIN", $env:WXWIN, "User")
+	
+}
+
+Write-HOST
 Write-Host "MinGW/gcc, wxWidgets, wxdirect and wxc have been installed by this script. However, wxcore and wx still need 'cabal install' run on them manually. They are located here:"
 Write-HOST "$wxHexPath\wxcore"
 Write-HOST "$wxHexPath\wx"
+Write-HOST
+Write-HOST
+Write-Host "cd to $wxHexPath, Y or N"
+$response3 = PauseYN
 
-#TODO: make it write the environment vars permanently.
-#Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
-#$response2 = PauseYN
-
-#set environment permanently
-#[Environment]::SetEnvironmentVariable("TestVariable", "Test value.", "User")
-
-cd $PSScriptRoot
+if ($response3 -eq "Y") {
+  cd $wxHexPath
+} else {
+  cd $PSScriptRoot
+}
