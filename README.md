@@ -17,7 +17,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 	 * 64-bit includes GCC version [4.6.3](http://git.haskell.org/ghc-tarballs.git/tree/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64) (from [sourceforge](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.6-release/))
 	 * 32-bit includes GCC version [4.5.2](http://git.haskell.org/ghc-tarballs.git/tree/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw)
 
-### Prerequisites for the windows builder tool: ###
+### Prerequisites for this script: ###
 
 * Haskell Platform 2014.2.0.0 for Windows, 32bit 
 * 7-zip
@@ -27,13 +27,12 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 
 * Windows7 SP1, (Windows 8 is untested)
 * .NET 4.5 - http://www.microsoft.com/download/details.aspx?id=30653
-* Windows Management Framework 4.0 -  http://www.microsoft.com/en-us/download/details.aspx?id=40855
+* Windows Management Framework 4.0 (for PowerShell version 4) -  http://www.microsoft.com/en-us/download/details.aspx?id=40855
 * Have previously run "Set-ExecutionPolicy Unrestricted" in an Admin-enabled powershell. (You can run "Set-ExecutionPolicy Restricted" when finished).
 
 ### Running ###
 
-* Run download.ps1 from powershell terminal (admin mode)
-* Then Run build.bat from cmd  (admin mode)
+* Run build.ps1 from powershell terminal (admin mode)
 
 ### Troubleshooting ###
 
@@ -43,6 +42,6 @@ wxWidgets-3.0.2 spits out this error when compiling in release mode.
 g++: gcc_mswudll\coredll_headerctlg.o: No such file or directory
 ```
 
- I copied and renamed a file called  "coredll_headerctrlg.o" to "coredll_headerctlg.o" and this seems to be an adequate workaround. At the moment build.bat does this automatically.
+ I copied and renamed a file called  "coredll_headerctrlg.o" to "coredll_headerctlg.o" and this seems to be an adequate workaround. At the moment the script does this automatically.
 
 
