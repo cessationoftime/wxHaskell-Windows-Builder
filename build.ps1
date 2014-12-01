@@ -174,8 +174,8 @@ Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 
 ## make wxHaskell samples
-#cd "$wxHexPath\samples\wx"
-#Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
+cd "$wxHexPath\samples\wx"
+Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 ## END  -- make wxHaskell samples
 
 ########################## Export Environment ##################
