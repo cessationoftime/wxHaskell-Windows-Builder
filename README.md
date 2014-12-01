@@ -13,7 +13,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
  * There is a [ticket](https://ghc.haskell.org/trac/ghc/ticket/9218) to upgrade the version of MinGW that ships with GHC, that was initiated with [this thread](https://www.haskell.org/pipermail/ghc-devs/2014-June/005174.html)
  * Currently GHC uses MinGW for 32-bit and MinGW-w64 for the 64-bit version. This ticket intends to use the MinGW-w64 project for both the 32-bit and 64-bit versions. 
  * This will affect what MinGW/GCC version we need to use for wxWidgets/wxHaskell.
- * GHC 7.8.3  (Haskell Platform 2014.2.0.0)
+ * Current - GHC 7.8.3  (Haskell Platform 2014.2.0.0)
 	 * 64-bit includes GCC version [4.6.3](http://git.haskell.org/ghc-tarballs.git/tree/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64) (from [sourceforge](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.6-release/))
 	 * 32-bit includes GCC version [4.5.2](http://git.haskell.org/ghc-tarballs.git/tree/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw)
 
