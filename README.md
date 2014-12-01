@@ -19,7 +19,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 
 ### Prerequisites for this script: ###
 
-* Haskell Platform 2014.2.0.0 for Windows, 32bit 
+* Haskell Platform 2014.2.0.0 (32-bit) for Windows
 * 7-zip
 
 	**For the Powershell download script**
