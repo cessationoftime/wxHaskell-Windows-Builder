@@ -101,8 +101,9 @@ foreach ($lib in $libs) {
 	GhcGitDownload $lib #download, if have not already done so
 	Un7 $lib $mingw  #unzip
 }
+https://github.com/wxHaskell/wxHaskell/archive/b3a909ae6ab1f7a49202405f299b477b26b9e6f3.zip
 
-$wxHaskellHex = "c5dae78e37e492fd5f801ca118e80ba3e2f0ce99"
+$wxHaskellHex = "b3a909ae6ab1f7a49202405f299b477b26b9e6f3"
 wxHaskellDownload $wxHaskellHex $wxHaskellPath
 
 ########################     BUILD       ##############
@@ -156,9 +157,19 @@ $env:Path = "$PATHHP;$PATHWX;$PATHMINGW;$PATHWIN"
 
 $wxHexPath="$wxHaskellPath\wxHaskell-$wxHaskellHex"
 cd "$wxHexPath\wxdirect"
+Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 cd "$wxHexPath\wxc"
+Invoke-Expression "& 'cabal' install --only-dependencies"
+Invoke-Expression "& 'cabal' configure"
+Invoke-Expression "& 'cabal' install"
+cd "$wxHexPath\wxcore"
+Invoke-Expression "& 'cabal' install --only-dependencies"
+Invoke-Expression "& 'cabal' configure"
+Invoke-Expression "& 'cabal' install"
+cd "$wxHexPath\wx"
+Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 
@@ -205,6 +216,7 @@ if ($response2 -eq "Y"){
 	[Environment]::SetEnvironmentVariable("WXCFG", $env:WXCFG, "User")
 	[Environment]::SetEnvironmentVariable("WXWIN", $env:WXWIN, "User")
 	
+	#[Environment]::SetEnvironmentVariable("MSYS_PATH", "C:\MinGW\bin;C:\msys\1.0\bin ", "User")
 }
 
 Write-HOST
