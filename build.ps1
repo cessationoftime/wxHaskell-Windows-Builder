@@ -249,7 +249,7 @@ if ($response2 -eq "Y"){
 
 if ($responseWxHaskellSamples -eq "Y") {
   cd "$wxHexPath\samples\wx"
-  Invoke-Expression "& 'BouncingBalls'"
+  Invoke-Expression "& '.\BouncingBalls'"
 } else {
   cd $PSScriptRoot
 }
