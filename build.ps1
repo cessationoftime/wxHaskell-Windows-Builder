@@ -64,6 +64,7 @@ if (!(Test-Path $downloadDir)){
 }
 
 
+
 SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$downloadDir\$wxWidgetsZip"
 UnzipIfNotExist "$downloadDir/$wxWidgetsZip" $WXDIR
 
@@ -74,7 +75,7 @@ if (!(Test-Path $mingw)){
 
 	SfDownload "mingw" "OldFiles/MinGW%20$mingwVno/$mingwExe" "$downloadDir\$mingwExe"
   
-	PauseG "MinGW installer will launch next. Remember to install the C++ compiler and MinGW-make options"  
+	PauseG "MinGW installer will launch next. Remember to install the C++ compiler and MinGW-make options. And install to $mingw"  
 	Invoke-Expression "& '$downloadDir\$mingwExe'"
 	PauseG "Continue when MingW installation finished."
 }
@@ -89,6 +90,10 @@ if (!(Test-Path "C:\msys\1.0")){
 	PauseG "Continue when Msys installation finished."
 }
 
+#create cabalBin directory if it doesn't exist yet. (wx-config needs to go there)
+if (!(Test-Path $cabalBin)){
+	New-Item $cabalBin -ItemType directory 
+}
 #grab wx-config from SourceForge
 SfDownload "wxhaskell" "wx-config-win/wx-config.exe" "$cabalBin\wx-config.exe"
 
@@ -101,7 +106,6 @@ foreach ($lib in $libs) {
 	GhcGitDownload $lib #download, if have not already done so
 	Un7 $lib $mingw  #unzip
 }
-https://github.com/wxHaskell/wxHaskell/archive/b3a909ae6ab1f7a49202405f299b477b26b9e6f3.zip
 
 $wxHaskellHex = "b3a909ae6ab1f7a49202405f299b477b26b9e6f3"
 wxHaskellDownload $wxHaskellHex $wxHaskellPath
@@ -134,7 +138,7 @@ function CleanWxWidgets {
 }
 
 if ($wxWidgetsExistsOnStartup) {
-    Write-Host "Do you wish to clean wxWidgets prior to building?"
+    Write-Host "Do you wish to clean wxWidgets prior to building? (make sure to say YES if you have yet to build at all!)"
     $response1 = PauseYN
 
 	if ($response1 -eq "Y") {
@@ -144,7 +148,7 @@ if ($wxWidgetsExistsOnStartup) {
 	CleanWxWidgets
 }
 
-PauseG "The contents of $wxWidgetsZip will now be built."
+#PauseG "The contents of $wxWidgetsZip will now be built."
 Invoke-Expression "& 'mingw32-make' -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release"
 
 # ----QUICK-FIX---- for wxWidgets-3.0.2
@@ -152,14 +156,27 @@ copy $WXDIR\build\msw\gcc_mswudll\coredll_headerctrlg.o $WXDIR\build\msw\gcc_msw
 Invoke-Expression "& 'mingw32-make' -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release"
 # ----END QUICK-FIX---- remove this fix for other versions.  Or find a better fix for this version.
 
+Write-Host
+Write-Host "Build wxWidgets samples?"
+$responseWidgetsSamples = PauseYN
+
+if ($responseWidgetsSamples -eq "Y") {
+	## make wxWidgets samples
+	cd "$WXDIR\samples"
+	Invoke-Expression "& 'mingw32-make' -j4 -f makefile.gcc SHELL=CMD.exe SHARED=1 UNICODE=1 BUILD=release"
+	## END  -- make wxWidgets samples
+}
+Write-Host
 #change path to use Haskell Platform's GCC (4.5.2)
 $env:Path = "$PATHHP;$PATHWX;$PATHMINGW;$PATHWIN"
 
+Invoke-Expression "& 'cabal' update"
 $wxHexPath="$wxHaskellPath\wxHaskell-$wxHaskellHex"
 cd "$wxHexPath\wxdirect"
 Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
+Write-Host "WXC takes a little while to build, and doesn't print much output to powershell. Be patient."
 cd "$wxHexPath\wxc"
 Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
@@ -173,11 +190,21 @@ Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
 
+Write-Host
+Write-Host "Build wxHaskell samples?"
+$responseWxHaskellSamples = PauseYN
+
+if ($responseWxHaskellSamples -eq "Y") {
 ## make wxHaskell samples
 cd "$wxHexPath\samples\wx"
 Invoke-Expression "& 'mingw32-make' -j4 SHELL=CMD.exe"
 ## END  -- make wxHaskell samples
+}
 
+Write-Host
+Write-Host
+Write-Host
+Write-Host
 ########################## Export Environment ##################
 
 Write-Host "The following environment settings need to be added to the Windows User (not Machine/System) environment manually for wxHaskell programs to run: "
@@ -187,16 +214,18 @@ Write-Host "WXCFG = $env:WXCFG"
 Write-Host "WXWIN = $env:WXWIN"
 Write-Host "WXC_PATH = $env:WXC_PATH"
 Write-Host "HASKELL_MINGW_PATH = $env:HASKELL_MINGW_PATH"
-Write-Host "CABAL_PATH = $env:CABAL_PATH"
 Write-Host "WX_PATH = $env:WX_PATH"
-$prependThese = "%WXC_PATH%;%HASKELL_MINGW_PATH%;%CABAL_PATH%;%WX_PATH%"
+$prependThese = "%WXC_PATH%;%HASKELL_MINGW_PATH%;%WX_PATH%"
+Write-Host
+Write-Host
 Write-Host "$prependThese should be prepended to the USER PATH variable"
-
+Write-Host
 #TODO: make it write the environment vars permanently.
 Write-Host "Do you wish to export these environment variables permanently? This will allow you to easily launch wxHaskell programs. Y or N"
 $response2 = PauseYN
 
 Write-Host
+
 
 #set environment permanently
 if ($response2 -eq "Y"){
@@ -209,30 +238,18 @@ if ($response2 -eq "Y"){
 	
 	[Environment]::SetEnvironmentVariable("WXC_PATH",$env:WXC_PATH, "User" )
 	[Environment]::SetEnvironmentVariable("HASKELL_MINGW_PATH",$env:HASKELL_MINGW_PATH, "User" )
-	[Environment]::SetEnvironmentVariable("CABAL_PATH",$env:CABAL_PATH, "User")
 	[Environment]::SetEnvironmentVariable("WX_PATH",$env:WX_PATH, "User")
 	[Environment]::SetEnvironmentVariable("GHC_VERSION", $env:GHC_VERSION, "User")
 	[Environment]::SetEnvironmentVariable("WXC_VERSION", $env:WXC_VERSION, "User")
 	[Environment]::SetEnvironmentVariable("WXCFG", $env:WXCFG, "User")
 	[Environment]::SetEnvironmentVariable("WXWIN", $env:WXWIN, "User")
 	
-	#[Environment]::SetEnvironmentVariable("MSYS_PATH", "C:\MinGW\bin;C:\msys\1.0\bin ", "User")
+	Write-Host "NOTE: you will not be able to launch wxHaskell programs via windows explorer until you logout, reboot, or propagate the new PATH variable in some other way. You can however launch them via powershell commands immediately."	
 }
-<#
-Write-HOST
-Write-Host "MinGW/gcc, wxWidgets, wxdirect and wxc have been installed by this script. However, wxcore and wx still need 'cabal install' run on them manually. They are located here:"
-Write-HOST "$wxHexPath\wxcore"
-Write-HOST "$wxHexPath\wx"
-Write-HOST
-Write-HOST
-Write-Host "cd to $wxHexPath, Y or N"
-$response3 = PauseYN
 
-if ($response3 -eq "Y") {
-  cd $wxHexPath
+if ($responseWxHaskellSamples -eq "Y") {
+  cd "$wxHexPath\samples\wx"
+  Invoke-Expression "& 'BouncingBalls'"
 } else {
   cd $PSScriptRoot
 }
-#>
-
-cd $PSScriptRoot
