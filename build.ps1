@@ -218,7 +218,7 @@ if ($response2 -eq "Y"){
 	
 	#[Environment]::SetEnvironmentVariable("MSYS_PATH", "C:\MinGW\bin;C:\msys\1.0\bin ", "User")
 }
-
+<#
 Write-HOST
 Write-Host "MinGW/gcc, wxWidgets, wxdirect and wxc have been installed by this script. However, wxcore and wx still need 'cabal install' run on them manually. They are located here:"
 Write-HOST "$wxHexPath\wxcore"
@@ -233,3 +233,6 @@ if ($response3 -eq "Y") {
 } else {
   cd $PSScriptRoot
 }
+#>
+
+cd $PSScriptRoot
