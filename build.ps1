@@ -176,7 +176,11 @@ cd "$wxHexPath\wxdirect"
 Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
 Invoke-Expression "& 'cabal' install"
+Write-Host
+Write-Host
 Write-Host "WXC takes a little while to build, and doesn't print much output to powershell. Be patient."
+Write-Host
+Write-Host
 cd "$wxHexPath\wxc"
 Invoke-Expression "& 'cabal' install --only-dependencies"
 Invoke-Expression "& 'cabal' configure"
