@@ -5,7 +5,7 @@ Script to download all dependencies of wxHaskell and build it on Windows.
 
 # Support for 32-bit GHC ONLY
 * Per the [wxHaskell building docs](https://www.haskell.org/haskellwiki/WxHaskell/Building#Supported_Configurations). Only building with the  32-bit MinGW project is supported. However this works on Windows 7 64-bit.
-* 64 bit support should work if we can build wxWidgets using MinGW-w64. I have yet to try myself. It would have to be built with this version of MinGW-w64 in particular, or at least a 4.6.x version. The reason the current version is 32-bit only is that I saw this line in the wxHaskell documentation: "We support building only with the gnu mingw32 C compiler (windows-mingw)." And so I started by building the 32-bit version, because I didn't entirely know what I was doing and I didn't want any additional roadblocks.
+* 64 bit support should work if we can build wxWidgets using MinGW-w64. I have yet to try myself. It would have to be built with [this version](http://git.haskell.org/ghc-tarballs.git/tree/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64) of MinGW-w64 in particular, or at least a 4.6.x version. The reason the current version is 32-bit only is that I saw this line in the wxHaskell documentation: "We support building only with the gnu mingw32 C compiler (windows-mingw)." And so I started by building the 32-bit version, because I didn't entirely know what I was doing and I didn't want any additional roadblocks.
 
  
 
