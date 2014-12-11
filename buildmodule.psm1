@@ -75,6 +75,16 @@ Function GhcGitDownload ($file) {
     }	
 }
 
+Function GhcGitDownload64 ($file) {
+    #download if download does not exist
+    if (!(Test-Path "$env:DownloadDir\$file")){
+		Write-Host "Downloading from http://git.haskell.org/ghc-tarballs.git/: $file"
+		Invoke-WebRequest "http://git.haskell.org/ghc-tarballs.git/blob/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64/$file" -OutFile "$env:DownloadDir\$file"
+    }	
+}
+
+
+
 Function SfDownload ($project, $htmlpath, $outfile) {
 
     #download if download does not exist
@@ -94,6 +104,14 @@ Function SfDownload ($project, $htmlpath, $outfile) {
     }	
 }
 
+Function DownloadWxConfigCpp {
+    #download if download does not exist
+    if (!(Test-Path "$env:DownloadDir\wx-config.cpp")){
+		Write-Host "Downloading wx-config.cpp"
+		Invoke-WebRequest "https://raw.githubusercontent.com/wxHaskell/wxHaskell/51fd321de8d1a6a369120ee0292db1fa4d08dc28/wx-config-win/wx-config-win/wx-config.cpp" -OutFile "$env:DownloadDir\wx-config.cpp"
+    }	
+}
+
 Function UnzipIfNotExist ($zip, $dest) 
 {
  #unzip if folder does not exist
@@ -105,7 +123,7 @@ Function UnzipIfNotExist ($zip, $dest)
 Function Un7 ($zipfile, $output)
 {
  $curr = (Get-Location).Path
- $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", ""
+ $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", "" -replace ".bz2", ""
  
  Invoke-Expression "& '$env:zip7\7z' -y x $env:DownloadDir\$zipfile -o$env:Temp"
  cd $env:Temp
