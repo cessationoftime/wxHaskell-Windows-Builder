@@ -66,7 +66,7 @@ $env:WXC_VERSION = "0.92.0.0"
 $env:WXCFG = "gcc_dll\mswu"
 $env:WXWIN = "C:\wxWidgets-autob"
 
-$wxWidgetsVersion="3.0.2"
+$env:WXWIDGETS_VERSION = "3.0.2"
 
 $env:zip7 = "C:\Program Files\7-Zip"
 }

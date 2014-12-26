@@ -14,6 +14,8 @@ Import-Module -Force .\buildmodule
 
 SetEnvironment
 
+$wxWidgetsVersion=$env:WXWIDGETS_VERSION
+
 $wxHaskellPath = "c:\wxHaskell"
 
 $USERHOMEDIR="c:\Users\$env:USERNAME"
