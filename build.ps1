@@ -59,9 +59,7 @@ return
 }
 
 #If !exists Then create build directory
-if (!(Test-Path $downloadDir)){
-	New-Item $downloadDir -ItemType directory 
-}
+CreateDirectoryIfNotExist $downloadDir
 
 
 
@@ -107,7 +105,7 @@ foreach ($lib in $libs) {
 	Un7 $lib $mingw  #unzip
 }
 
-$wxHaskellHex = "b3a909ae6ab1f7a49202405f299b477b26b9e6f3"
+$wxHaskellHex = getWxHaskellHex
 wxHaskellDownload $wxHaskellHex $wxHaskellPath
 
 ########################     BUILD       ##############

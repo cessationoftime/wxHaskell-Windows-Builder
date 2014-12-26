@@ -112,11 +112,30 @@ Function DownloadWxConfigCpp {
     }	
 }
 
+Function CreateDirectoryIfNotExist ($dire) {
+  if (!(Test-Path $dire)){
+	  New-Item $dire -ItemType directory 
+  }
+}
+
+Function UnzipFile ($zipfile, $dest) {
+  $shell = new-object -com shell.application
+  $zip = $shell.NameSpace($zipfile)
+  
+  CreateDirectoryIfNotExist $dest
+  
+  $destinationFolder = $shell.NameSpace($dest)
+  $destinationFolder.CopyHere($zip.Items())
+}
+
 Function UnzipIfNotExist ($zip, $dest) 
 {
  #unzip if folder does not exist
     if (!(Test-Path $dest)){
-      unzip $zip -d $dest
+     # unzip $zip -d $dest
+	 
+	 UnzipFile $zip $dest
+	 
 	}
 }
 
@@ -131,6 +150,10 @@ Function Un7 ($zipfile, $output)
  cd $curr
 }
 
+function getWxHaskellHex {	
+  return "69671b4cac125a502cabca544f5de040940cc5b6"
+}
+
 function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {	
 	$source = "https://github.com/wxHaskell/wxHaskell/archive/$wxHaskellHex.zip"
     $wxHaskellFile = "wxHaskell_$wxHaskellHex"
@@ -141,9 +164,10 @@ function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {
 			Invoke-WebRequest $source -OutFile "$env:DownloadDir\$wxHaskellFile"
 	}
 
+	 #unzip if folder does not exist
+    if (!(Test-Path "$wxHaskellPath\wxHaskell-$wxHaskellHex")){
+      UnzipFile "$env:DownloadDir/$wxHaskellFile" $wxHaskellPath
+	}
 	
-    UnzipIfNotExist "$env:DownloadDir/$wxHaskellFile" $wxHaskellPath
-	
-
 }
 Export-ModuleMember -Alias * -Function *

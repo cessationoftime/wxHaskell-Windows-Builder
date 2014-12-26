@@ -59,9 +59,7 @@ return
 }
 
 #If !exists Then create build directory
-if (!(Test-Path $downloadDir)){
-	New-Item $downloadDir -ItemType directory 
-}
+CreateDirectoryIfNotExist $downloadDir
 
 
 
@@ -86,7 +84,7 @@ DownloadWxConfigCpp
 #https://raw.githubusercontent.com/wxHaskell/wxHaskell/51fd321de8d1a6a369120ee0292db1fa4d08dc28/wx-config-win/wx-config-win/wx-config.cpp
 g++ "$env:DownloadDir\wx-config.cpp" -o "$cabalBin\wx-config.exe"
 
-$wxHaskellHex = "b3a909ae6ab1f7a49202405f299b477b26b9e6f3"
+$wxHaskellHex = getWxHaskellHex
 wxHaskellDownload $wxHaskellHex $wxHaskellPath
 
 ########################     BUILD       ##############
