@@ -12,19 +12,9 @@ $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Pr
 #Remove-Module -Name buildmodule
 Import-Module -Force .\buildmodule
 
-RemoveEnvironment
-
+SetEnvironment
 
 $wxHaskellPath = "c:\wxHaskell"
-
-$env:GHC_VERSION = "7.8.3"
-$env:WXC_VERSION = "0.91.0.0"
-$env:WXCFG = "gcc_dll\mswu"
-$env:WXWIN = "C:\wxWidgets-autob"
-
-$env:zip7 = "C:\Program Files\7-Zip"
-
-$wxWidgetsVersion="3.0.2"
 
 $USERHOMEDIR="c:\Users\$env:USERNAME"
 $APPDATA="$USERHOMEDIR\AppData\Roaming"
@@ -64,7 +54,7 @@ CreateDirectoryIfNotExist $downloadDir
 
 
 SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$downloadDir\$wxWidgetsZip"
-UnzipIfNotExist "$downloadDir/$wxWidgetsZip" $WXDIR
+UnzipIfNotExist "$downloadDir\$wxWidgetsZip" $WXDIR
 
 #download and unzip MinGW64.
 if (!(Test-Path $mingw)){
@@ -84,8 +74,7 @@ DownloadWxConfigCpp
 #https://raw.githubusercontent.com/wxHaskell/wxHaskell/51fd321de8d1a6a369120ee0292db1fa4d08dc28/wx-config-win/wx-config-win/wx-config.cpp
 g++ "$env:DownloadDir\wx-config.cpp" -o "$cabalBin\wx-config.exe"
 
-$wxHaskellHex = getWxHaskellHex
-wxHaskellDownload $wxHaskellHex $wxHaskellPath
+wxHaskellDownload $wxHaskellPath
 
 ########################     BUILD       ##############
 
@@ -146,6 +135,7 @@ if ($responseWidgetsSamples -eq "Y") {
 Write-Host
 #change path to use Haskell Platform's GCC (4.5.2)
 $env:Path = "$PATHHP;$PATHWX;$PATHMINGW;$PATHWIN"
+$wxHaskellHex = getWxHaskellHex
 
 Invoke-Expression "& 'cabal' update"
 $wxHexPath="$wxHaskellPath\wxHaskell-$wxHaskellHex"

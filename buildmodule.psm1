@@ -1,3 +1,4 @@
+
 function Pause
 {
     param([string] $pauseKey,
@@ -55,6 +56,21 @@ function RemoveEnvironment
 		}
 	}
 }
+
+function SetEnvironment 
+{
+RemoveEnvironment
+
+$env:GHC_VERSION = "7.8.3"
+$env:WXC_VERSION = "0.92.0.0"
+$env:WXCFG = "gcc_dll\mswu"
+$env:WXWIN = "C:\wxWidgets-autob"
+
+$wxWidgetsVersion="3.0.2"
+
+$env:zip7 = "C:\Program Files\7-Zip"
+}
+
 
 function GetRandomString ([int]$Length)
 {
@@ -120,6 +136,7 @@ Function CreateDirectoryIfNotExist ($dire) {
 
 Function UnzipFile ($zipfile, $dest) {
   $shell = new-object -com shell.application
+  Write-Host "zipfile = $zipfile"
   $zip = $shell.NameSpace($zipfile)
   
   CreateDirectoryIfNotExist $dest
@@ -154,9 +171,10 @@ function getWxHaskellHex {
   return "69671b4cac125a502cabca544f5de040940cc5b6"
 }
 
-function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {	
+function wxHaskellDownload ($wxHaskellPath) {	
+    $wxHaskellHex = getWxHaskellHex
 	$source = "https://github.com/wxHaskell/wxHaskell/archive/$wxHaskellHex.zip"
-    $wxHaskellFile = "wxHaskell_$wxHaskellHex"
+    $wxHaskellFile = "wxHaskell_$wxHaskellHex.zip"
 	#download wxHaskell from Github
 	if (!(Test-Path "$env:DownloadDir\$wxHaskellFile")){
 		
@@ -166,7 +184,7 @@ function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {
 
 	 #unzip if folder does not exist
     if (!(Test-Path "$wxHaskellPath\wxHaskell-$wxHaskellHex")){
-      UnzipFile "$env:DownloadDir/$wxHaskellFile" $wxHaskellPath
+      UnzipFile "$env:DownloadDir\$wxHaskellFile" $wxHaskellPath
 	}
 	
 }
