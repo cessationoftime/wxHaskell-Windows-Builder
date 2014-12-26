@@ -70,8 +70,9 @@ UnzipIfNotExist "$downloadDir/$wxWidgetsZip" $WXDIR
 
 #download and unzip MinGW64.
 if (!(Test-Path $mingw)){
-	GhcGitDownload64 "x86_64-w64-mingw32-gcc-4.6.3-release-win64_rubenvb.tar.bz2" #download, if have not already done so
-    Un7 $lib $mingw  #unzip
+    $mlib = "x86_64-w64-mingw32-gcc-4.6.3-release-win64_rubenvb.tar.bz2"
+	GhcGitDownload64 $mlib #download, if have not already done so
+    Un7 $mlib $mingw  #unzip
 }
 
 #create cabalBin directory if it doesn't exist yet. (wx-config needs to go there)
