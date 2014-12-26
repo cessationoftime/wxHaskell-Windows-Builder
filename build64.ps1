@@ -215,8 +215,13 @@ if ($response2 -eq "Y"){
 	
 	
     $userCurrentPath = [Environment]::GetEnvironmentVariable("PATH", "User" )
-	if (!($userCurrentPath.Contains($prependThese))) {
-	  [Environment]::SetEnvironmentVariable("PATH","$prependThese;$userCurrentPath" , "User" )
+	
+	if ($userCurrentPath -eq $null) {
+		[Environment]::SetEnvironmentVariable("PATH","$prependThese" , "User" )
+	} else {
+		if (!($userCurrentPath.Contains($prependThese))) {
+			[Environment]::SetEnvironmentVariable("PATH","$prependThese;$userCurrentPath" , "User" )
+		}
 	}
 	
 	[Environment]::SetEnvironmentVariable("WXC_PATH",$env:WXC_PATH, "User" )
