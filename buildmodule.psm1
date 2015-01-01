@@ -1,3 +1,4 @@
+
 function Pause
 {
     param([string] $pauseKey,
@@ -56,6 +57,21 @@ function RemoveEnvironment
 	}
 }
 
+function SetEnvironment 
+{
+RemoveEnvironment
+
+$env:GHC_VERSION = "7.8.3"
+$env:WXC_VERSION = "0.92.0.0"
+$env:WXCFG = "gcc_dll\mswu"
+$env:WXWIN = "C:\wxWidgets-autob"
+
+$env:WXWIDGETS_VERSION = "3.0.2"
+
+$env:zip7 = "C:\Program Files\7-Zip"
+}
+
+
 function GetRandomString ([int]$Length)
 {
 	$set    = "abcdefghijklmnopqrstuvwxyz0123456789".ToCharArray()
@@ -74,6 +90,16 @@ Function GhcGitDownload ($file) {
 		Invoke-WebRequest "http://git.haskell.org/ghc-tarballs.git/blob/e7b7b152083f7c3e3559e557a239757d41ac02a6:/mingw/$file" -OutFile "$env:DownloadDir\$file"
     }	
 }
+
+Function GhcGitDownload64 ($file) {
+    #download if download does not exist
+    if (!(Test-Path "$env:DownloadDir\$file")){
+		Write-Host "Downloading from http://git.haskell.org/ghc-tarballs.git/: $file"
+		Invoke-WebRequest "http://git.haskell.org/ghc-tarballs.git/blob/18e0c37f8023abf469af991e2fc2d3b024319c27:/mingw64/$file" -OutFile "$env:DownloadDir\$file"
+    }	
+}
+
+
 
 Function SfDownload ($project, $htmlpath, $outfile) {
 
@@ -94,18 +120,46 @@ Function SfDownload ($project, $htmlpath, $outfile) {
     }	
 }
 
+Function DownloadWxConfigCpp {
+    #download if download does not exist
+    if (!(Test-Path "$env:DownloadDir\wx-config.cpp")){
+		Write-Host "Downloading wx-config.cpp"
+		Invoke-WebRequest "https://raw.githubusercontent.com/wxHaskell/wxHaskell/51fd321de8d1a6a369120ee0292db1fa4d08dc28/wx-config-win/wx-config-win/wx-config.cpp" -OutFile "$env:DownloadDir\wx-config.cpp"
+    }	
+}
+
+Function CreateDirectoryIfNotExist ($dire) {
+  if (!(Test-Path $dire)){
+	  New-Item $dire -ItemType directory 
+  }
+}
+
+Function UnzipFile ($zipfile, $dest) {
+  $shell = new-object -com shell.application
+  Write-Host "zipfile = $zipfile"
+  $zip = $shell.NameSpace($zipfile)
+  
+  CreateDirectoryIfNotExist $dest
+  
+  $destinationFolder = $shell.NameSpace($dest)
+  $destinationFolder.CopyHere($zip.Items())
+}
+
 Function UnzipIfNotExist ($zip, $dest) 
 {
  #unzip if folder does not exist
     if (!(Test-Path $dest)){
-      unzip $zip -d $dest
+     # unzip $zip -d $dest
+	 
+	 UnzipFile $zip $dest
+	 
 	}
 }
 
 Function Un7 ($zipfile, $output)
 {
  $curr = (Get-Location).Path
- $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", ""
+ $tarfile = $zipfile -replace ".lzma", "" -replace ".gz", "" -replace ".bz2", ""
  
  Invoke-Expression "& '$env:zip7\7z' -y x $env:DownloadDir\$zipfile -o$env:Temp"
  cd $env:Temp
@@ -113,9 +167,14 @@ Function Un7 ($zipfile, $output)
  cd $curr
 }
 
-function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {	
+function getWxHaskellHex {	
+  return "69671b4cac125a502cabca544f5de040940cc5b6"
+}
+
+function wxHaskellDownload ($wxHaskellPath) {	
+    $wxHaskellHex = getWxHaskellHex
 	$source = "https://github.com/wxHaskell/wxHaskell/archive/$wxHaskellHex.zip"
-    $wxHaskellFile = "wxHaskell_$wxHaskellHex"
+    $wxHaskellFile = "wxHaskell_$wxHaskellHex.zip"
 	#download wxHaskell from Github
 	if (!(Test-Path "$env:DownloadDir\$wxHaskellFile")){
 		
@@ -123,9 +182,10 @@ function wxHaskellDownload ($wxHaskellHex, $wxHaskellPath) {
 			Invoke-WebRequest $source -OutFile "$env:DownloadDir\$wxHaskellFile"
 	}
 
+	 #unzip if folder does not exist
+    if (!(Test-Path "$wxHaskellPath\wxHaskell-$wxHaskellHex")){
+      UnzipFile "$env:DownloadDir\$wxHaskellFile" $wxHaskellPath
+	}
 	
-    UnzipIfNotExist "$env:DownloadDir/$wxHaskellFile" $wxHaskellPath
-	
-
 }
 Export-ModuleMember -Alias * -Function *

@@ -18,11 +18,10 @@ $wxWidgetsVersion=$env:WXWIDGETS_VERSION
 
 $wxHaskellPath = "c:\wxHaskell"
 
-
 $USERHOMEDIR="c:\Users\$env:USERNAME"
 $APPDATA="$USERHOMEDIR\AppData\Roaming"
 $cabalBin="$APPDATA\cabal\bin"
-$haskellPlatform = "C:\Program Files (x86)\Haskell Platform\2014.2.0.0"
+$haskellPlatform = "C:\Program Files\Haskell Platform\2014.2.0.0"
 
 $wxWidgetsZip="wxWidgets-$wxWidgetsVersion.zip"
 
@@ -30,7 +29,7 @@ $downloadDir = "$PSScriptRoot\download"
 
 $env:DownloadDir = $downloadDir
 
-$mingw = "C:\MinGW"
+$mingw = "C:\MinGW64"
 $tempDir = $env:Temp
 
 $WXDIR = $env:WXWIN
@@ -42,7 +41,7 @@ $wxWidgetsExistsOnStartup = Test-Path $WXDIR
 
 
 if (!(Test-Path $haskellPlatform)){
-Write-Host "You need to install the Haskell Platform ($haskellPlatform)! Only the 32-bit version is supported."
+Write-Host "You need to install the Haskell Platform ($haskellPlatform)! Only the 64-bit version is supported."
 return
 }
 
@@ -59,51 +58,29 @@ CreateDirectoryIfNotExist $downloadDir
 SfDownload "wxwindows" "$wxWidgetsVersion/$wxWidgetsZip" "$downloadDir\$wxWidgetsZip"
 UnzipIfNotExist "$downloadDir\$wxWidgetsZip" $WXDIR
 
-#download and run installer if MinGW is not installed.
+#download and unzip MinGW64.
 if (!(Test-Path $mingw)){
-	$mingwVno="5.1.6"
-	$mingwExe="MinGW-$mingwVno.exe"
-
-	SfDownload "mingw" "OldFiles/MinGW%20$mingwVno/$mingwExe" "$downloadDir\$mingwExe"
-  
-	PauseG "MinGW installer will launch next. Remember to install the C++ compiler and MinGW-make options. And install to $mingw"  
-	Invoke-Expression "& '$downloadDir\$mingwExe'"
-	PauseG "Continue when MingW installation finished."
-}
-if (!(Test-Path "C:\msys\1.0")){  
-    $msysVno="1.0.11"
-    $msysExe="MSYS-$msysVno.exe"
-  
-    SfDownload "mingw" "MSYS/Base/msys-core/msys-$msysVno/$msysExe" "$downloadDir\$msysExe"
-	
-	PauseG "Msys installer will launch next. When finished check that /etc/fstab is correct,  so that /mingw mounts correctly. It should not be empty!"
-	Invoke-Expression "& '$downloadDir\$msysExe'"
-	PauseG "Continue when Msys installation finished."
+    $mlib = "x86_64-w64-mingw32-gcc-4.6.3-release-win64_rubenvb.tar.bz2"
+	GhcGitDownload64 $mlib #download, if have not already done so
+    Un7 $mlib $mingw  #unzip
 }
 
 #create cabalBin directory if it doesn't exist yet. (wx-config needs to go there)
 if (!(Test-Path $cabalBin)){
 	New-Item $cabalBin -ItemType directory 
 }
+
+
 #grab wx-config from SourceForge
-SfDownload "wxhaskell" "wx-config-win/wx-config.exe" "$cabalBin\wx-config.exe"
-
-PauseG "We will next install a GHC compatible version of GCC into MinGW. This will overwrite the version of GCC currently installed in MinGW."
-
-#download GCC/MinGW packages
-$libs = @("binutils-2.20.51-1-mingw32-bin.tar.lzma","gcc-c++-4.5.2-1-mingw32-bin.tar.lzma","gcc-core-4.5.2-1-mingw32-bin.tar.lzma","libgcc-4.5.2-1-mingw32-dll-1.tar.lzma","libgmp-5.0.1-1-mingw32-dll-10.tar.lzma","libmpc-0.8.1-1-mingw32-dll-2.tar.lzma","libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma","libstdc++-4.5.2-1-mingw32-dll-6.tar.lzma","mingwrt-3.18-mingw32-dev.tar.gz","mingwrt-3.18-mingw32-dll.tar.gz","w32api-3.15-1-mingw32-dev.tar.lzma")
-
-foreach ($lib in $libs) {
-	GhcGitDownload $lib #download, if have not already done so
-	Un7 $lib $mingw  #unzip
-}
-
+DownloadWxConfigCpp
+#https://raw.githubusercontent.com/wxHaskell/wxHaskell/51fd321de8d1a6a369120ee0292db1fa4d08dc28/wx-config-win/wx-config-win/wx-config.cpp
+g++ "$env:DownloadDir\wx-config.cpp" -o "$cabalBin\wx-config.exe"
 
 wxHaskellDownload $wxHaskellPath
 
 ########################     BUILD       ##############
 
-$env:WXC_PATH = "$APPDATA\cabal\i386-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION"
+$env:WXC_PATH = "$APPDATA\cabal\x86_64-windows-ghc-$env:GHC_VERSION\wxc-$env:WXC_VERSION"
 $env:HASKELL_MINGW_PATH = "$haskellPlatform\mingw\bin"
 $env:CABAL_PATH = "$APPDATA\cabal\bin"
 $env:WX_PATH = "$WXDIR\lib\gcc_dll;$WXDIR"
@@ -111,7 +88,7 @@ $env:WX_PATH = "$WXDIR\lib\gcc_dll;$WXDIR"
 $PATHWX="$env:WX_PATH;$env:CABAL_PATH;$env:WXC_PATH"
 $PATHHP="$env:HASKELL_MINGW_PATH;$haskellPlatform\lib\extralibs\bin;$haskellPlatform\bin"
 $PATHWIN="$USERHOMEDIR\bin;c:\Windows\system32;c:\Windows;c:\Windows\System32\Wbem"
-$PATHMINGW="c:\MinGW\bin"
+$PATHMINGW="$mingw\bin"
 
 # ----BUILD wxWidgets----
 
@@ -228,7 +205,7 @@ if ($response2 -eq "Y"){
 	
 	
     $userCurrentPath = [Environment]::GetEnvironmentVariable("PATH", "User" )
-
+	
 	if ($userCurrentPath -eq $null) {
 		[Environment]::SetEnvironmentVariable("PATH","$prependThese" , "User" )
 	} else {
@@ -236,7 +213,6 @@ if ($response2 -eq "Y"){
 			[Environment]::SetEnvironmentVariable("PATH","$prependThese;$userCurrentPath" , "User" )
 		}
 	}
-	
 	
 	[Environment]::SetEnvironmentVariable("WXC_PATH",$env:WXC_PATH, "User" )
 	[Environment]::SetEnvironmentVariable("HASKELL_MINGW_PATH",$env:HASKELL_MINGW_PATH, "User" )
